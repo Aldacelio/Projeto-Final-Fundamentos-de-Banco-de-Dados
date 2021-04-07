@@ -1,0 +1,314 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Visão;
+
+import Controle.Modulo_Conexão;
+import java.awt.Toolkit;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author aldac
+ */
+public class Login extends javax.swing.JFrame {
+    Connection conexao = null; //Variavel de conexao 
+    PreparedStatement pst = null; //Variavel de execução das sql
+    ResultSet rs = null; //Variavel para exibir resultados
+    int id_usuario;
+    int id_anterior;
+    
+    public void logar(){
+        
+        //Variaveis necessarias para o login
+        String sql_consulta_dados = "select * from login where usuario=? and senha=?";
+        String tipo;
+        String sql_consulta_tipo = "SELECT * FROM login WHERE usuario=? and senha=?";
+      
+       
+        try{
+            //Consultando se o Usuario e/ou Senha existem no banco
+            pst = conexao.prepareStatement(sql_consulta_dados);
+            pst.setString(1, jTextField_LOGIN.getText());
+            pst.setString(2, jPasswordField_SENHA.getText());
+            
+            rs = pst.executeQuery();//executando a query
+            
+            //testando se a Query tem um valor possitivo executou
+            if(rs.next()){
+                
+                //Consultando a permissão do usuario para o login
+                pst = conexao.prepareStatement(sql_consulta_tipo);
+                pst.setString(1, jTextField_LOGIN.getText());
+                pst.setString(2, jPasswordField_SENHA.getText());
+                rs = pst.executeQuery();//executando a query
+                rs.next();//positivando a execução da query
+                id_usuario = rs.getInt(1);//id usuario
+                Tela_Principal e = new Tela_Principal();
+                e.setVisible(true);
+                dispose();
+                
+                
+            }else{
+                JOptionPane.showMessageDialog(null, "Usuario e/ou Senha incorreto, digite novamente por favor.");
+            }
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Consulte o suporte e forneça a informação que ocorreu erro no try/catch de login erro encontrado foi : "+e);
+        }
+    }
+    
+    public void lembrar(){
+        String sql_lembrar = "update lembra set id=?";
+        
+        try {
+            pst = conexao.prepareStatement(sql_lembrar);
+            pst.setInt(1, id_usuario);
+            pst.executeUpdate();//executando a query
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Consulte o suporte e forneça a informação que ocorreu erro no try/catch de lembre-se de mim erro encontrado foi : "+e);
+        }
+    }
+    
+    public void ultimo_usuario(){
+    
+        String sql_anterior = "select*from lembra";
+        String buscando_dados = "Select * from login where id=?";
+        
+        try {
+            pst = conexao.prepareStatement(sql_anterior);
+            rs = pst.executeQuery();//executando a query
+            rs.next();//positivando a execução da query
+            id_anterior = rs.getInt(1);
+            
+            if(id_anterior>0){
+                pst = conexao.prepareStatement(buscando_dados);
+                pst.setInt(1, id_anterior);
+                rs = pst.executeQuery();//executando a query
+                rs.next();//positivando a execução da query
+                jTextField_LOGIN.setText(rs.getString(2));
+                jPasswordField_SENHA.setText(rs.getString(3));
+                
+                JCbox_LEMBRAR.setSelected(true);
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+  
+    public void limpar_lembra(){
+        String sql_limpar = "update lembra set id=?"; 
+        
+        try {
+            pst = conexao.prepareStatement(sql_limpar);
+            pst.setInt(1,0);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    private void setIcon(){
+            
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/Imagens/icon.png")));
+        
+    }
+    /**
+     * Creates new form Login
+     */
+    public Login() {
+        initComponents();
+        setIcon();
+        conexao = Modulo_Conexão.conector();
+        ultimo_usuario();
+        setLocationRelativeTo(null);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jTextField_LOGIN = new javax.swing.JTextField();
+        JL_Senha = new javax.swing.JLabel();
+        JL_quadradinho_rosa_senha = new javax.swing.JLabel();
+        JL_Login = new javax.swing.JLabel();
+        JL_quadradinho_rosa_login = new javax.swing.JLabel();
+        jPasswordField_SENHA = new javax.swing.JPasswordField();
+        jButton1 = new javax.swing.JButton();
+        JL_Imagem_do_usuario = new javax.swing.JLabel();
+        JCbox_LEMBRAR = new javax.swing.JCheckBox();
+        JL_imagem_hora = new javax.swing.JLabel();
+        JL_Plano_de_fundo = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(479, 498));
+        setResizable(false);
+        getContentPane().setLayout(null);
+
+        jTextField_LOGIN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField_LOGINActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jTextField_LOGIN);
+        jTextField_LOGIN.setBounds(140, 200, 250, 40);
+
+        JL_Senha.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        JL_Senha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/cadeado.png"))); // NOI18N
+        getContentPane().add(JL_Senha);
+        JL_Senha.setBounds(100, 270, 40, 40);
+
+        JL_quadradinho_rosa_senha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/Rosa Claro.jpg"))); // NOI18N
+        JL_quadradinho_rosa_senha.setText("jLabel1");
+        getContentPane().add(JL_quadradinho_rosa_senha);
+        JL_quadradinho_rosa_senha.setBounds(100, 270, 40, 40);
+
+        JL_Login.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        JL_Login.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/pessoinha.png"))); // NOI18N
+        JL_Login.setToolTipText("");
+        getContentPane().add(JL_Login);
+        JL_Login.setBounds(100, 200, 40, 40);
+
+        JL_quadradinho_rosa_login.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/Rosa Claro.jpg"))); // NOI18N
+        JL_quadradinho_rosa_login.setText("jLabel1");
+        getContentPane().add(JL_quadradinho_rosa_login);
+        JL_quadradinho_rosa_login.setBounds(100, 200, 40, 40);
+
+        jPasswordField_SENHA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jPasswordField_SENHAActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jPasswordField_SENHA);
+        jPasswordField_SENHA.setBounds(140, 270, 250, 40);
+
+        jButton1.setBackground(new java.awt.Color(239, 84, 132));
+        jButton1.setForeground(new java.awt.Color(239, 84, 132));
+        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/Botao de login.png"))); // NOI18N
+        jButton1.setToolTipText("Clique para logar");
+        jButton1.setBorder(null);
+        jButton1.setBorderPainted(false);
+        jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButton1.setPreferredSize(new java.awt.Dimension(246, 38));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton1);
+        jButton1.setBounds(120, 350, 250, 40);
+
+        JL_Imagem_do_usuario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/Usuario.png"))); // NOI18N
+        JL_Imagem_do_usuario.setText("jLabel1");
+        getContentPane().add(JL_Imagem_do_usuario);
+        JL_Imagem_do_usuario.setBounds(-10, 0, 460, 230);
+
+        JCbox_LEMBRAR.setBackground(new java.awt.Color(25, 30, 62));
+        JCbox_LEMBRAR.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
+        JCbox_LEMBRAR.setForeground(new java.awt.Color(255, 255, 255));
+        JCbox_LEMBRAR.setText("Lembre-se de mim");
+        JCbox_LEMBRAR.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JCbox_LEMBRARActionPerformed(evt);
+            }
+        });
+        getContentPane().add(JCbox_LEMBRAR);
+        JCbox_LEMBRAR.setBounds(160, 410, 160, 30);
+        getContentPane().add(JL_imagem_hora);
+        JL_imagem_hora.setBounds(10, 450, 30, 50);
+
+        JL_Plano_de_fundo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Imagens/Plano de fundo.png"))); // NOI18N
+        JL_Plano_de_fundo.setText("PLANO DE FUNDO");
+        getContentPane().add(JL_Plano_de_fundo);
+        JL_Plano_de_fundo.setBounds(0, 0, 480, 500);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jTextField_LOGINActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_LOGINActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField_LOGINActionPerformed
+
+    private void jPasswordField_SENHAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jPasswordField_SENHAActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jPasswordField_SENHAActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+         logar();
+        if ( JCbox_LEMBRAR.isSelected()) {
+            lembrar();
+          } else {
+            limpar_lembra();
+           }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void JCbox_LEMBRARActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JCbox_LEMBRARActionPerformed
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_JCbox_LEMBRARActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Login().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox JCbox_LEMBRAR;
+    private javax.swing.JLabel JL_Imagem_do_usuario;
+    private javax.swing.JLabel JL_Login;
+    private javax.swing.JLabel JL_Plano_de_fundo;
+    private javax.swing.JLabel JL_Senha;
+    private javax.swing.JLabel JL_imagem_hora;
+    private javax.swing.JLabel JL_quadradinho_rosa_login;
+    private javax.swing.JLabel JL_quadradinho_rosa_senha;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JPasswordField jPasswordField_SENHA;
+    private javax.swing.JTextField jTextField_LOGIN;
+    // End of variables declaration//GEN-END:variables
+}
